@@ -140,7 +140,13 @@ authenticator = stauth.Authenticate(
 # ---------------------------------------------------------
 st.set_page_config(page_title="Aura: The Universal Ethics Engine", layout="wide", page_icon="🛡️")
 
-authenticator.login(location="main")
+# --- AUTHENTICATION BYPASSED FOR HACKATHON ---
+st.session_state["authentication_status"] = True
+st.session_state["name"] = "Admin User"
+st.session_state["username"] = "admin"
+
+if False: # Disabled for judges
+    authenticator.login(location="main")
 
 if st.session_state["authentication_status"] is False:
     st.error("Username/password is incorrect")
