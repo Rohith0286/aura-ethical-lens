@@ -1,0 +1,6 @@
+streamlit
+streamlit-authenticator
+pandas
+requests
+fpdf2
+Pillow

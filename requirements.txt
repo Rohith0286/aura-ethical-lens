@@ -1,0 +1,13 @@
+streamlit
+pandas
+matplotlib
+seaborn
+fairlearn
+scikit-learn
+google-generativeai
+fpdf2
+shap
+xgboost
+
+networkx
+dowhy
