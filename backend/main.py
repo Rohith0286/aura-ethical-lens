@@ -175,13 +175,23 @@ def create_audit(
     api_key: str = Form(...),
     champion: str = Form(...)
 ):
-    genai.configure(api_key=api_key)
     try:
-        model_name = 'models/gemini-1.5-flash'
-        for m in genai.list_models():
-            if 'generateContent' in m.supported_generation_methods and 'flash' in m.name:
-                model_name = m.name
-                break
+        genai.configure(api_key=api_key)
+        
+        # Try to find the flash model, but handle the 403 error during listing
+        try:
+            model_name = 'models/gemini-1.5-flash'
+            for m in genai.list_models():
+                if 'generateContent' in m.supported_generation_methods and 'flash' in m.name:
+                    model_name = m.name
+                    break
+        except Exception as list_err:
+            if "403" in str(list_err) or "denied" in str(list_err).lower():
+                # If listing fails, we'll try the default name, but if that fails, we use fallback
+                pass
+            else:
+                raise list_err
+
         genai_model = genai.GenerativeModel(model_name)
         prompt = f"""
         You are a Senior AI Ethics Engineer. We trained a {champion} model.
@@ -203,11 +213,11 @@ def create_audit(
             response = genai_model.generate_content(prompt, safety_settings=safety_settings)
             narrative = response.text
         except Exception as e:
-            if "403" in str(e) or "denied" in str(e).lower():
+            if "403" in str(e) or "denied" in str(e).lower() or "permission" in str(e).lower():
                 # Professional Fallback Narrative
                 narrative = f"""### 🛡️ Aura Emergency Audit (Local Engine)
 
-**Status:** External API access is restricted, but Aura's local intelligence has synthesized the following:
+**Status:** External API access is restricted (403), but Aura's local intelligence has synthesized the following:
 
 The audit of the **{champion}** model reveals a **Demographic Parity Difference of {dpd:.3f}** and a **Disparate Impact Ratio of {dpr:.3f}**.
 
