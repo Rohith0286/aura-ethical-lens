@@ -161,7 +161,9 @@ authenticator.logout(location="sidebar")
 
 st.sidebar.markdown("---")
 with st.sidebar.expander("⚙️ System Settings", expanded=False):
-    api_key = st.text_input("Gemini API Key", type="password")
+    # Check for Secret Key first
+    default_key = os.getenv("GEMINI_API_KEY", "")
+    api_key = st.text_input("Gemini API Key", value=default_key, type="password", help="Guest access enabled via Master Key" if default_key else "Enter your own key")
     if st.button("Verify & Connect"):
         try:
             import google.generativeai as genai
