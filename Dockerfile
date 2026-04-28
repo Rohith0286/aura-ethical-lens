@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir -r backend/requirements.txt
 RUN pip install --no-cache-dir -r frontend/requirements.txt
 
+# Set PYTHONPATH to include backend folder for imports
+ENV PYTHONPATH="${PYTHONPATH}:/app/backend"
+
 # Create a startup script to run both FastAPI and Streamlit
 RUN echo '#!/bin/bash\n\
 python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000 &\n\
